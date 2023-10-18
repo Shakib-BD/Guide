@@ -1,4 +1,4 @@
-#**How to build AOSP Custom ROM?**
+# How to build AOSP Custom ROM?
 
 Hello friends, this time I want to discuss how to build AOSP. For you HP repairers, are you sometimes curious about how to build your own Custom ROM? So, on this occasion I want to give you the easiest tutorial on how to build your own Custom ROM.
 
@@ -6,9 +6,9 @@ Before continuing, make sure you have a basic understanding of the Linux CLI and
 
 ⚪ **Requirements** :
 
-1. *Brain.*
-2. *Internet.*
-3. *Server: Like Google Cloud, Azure, Amazon.*
+1. *Brain & Knowledge About Linux & Git command*
+2. *Internet & Data.*
+3. *Server: Like [Google Cloud](https://cloud.google.com/storage?hl=en), [Azure](https://azure.microsoft.com/en-us/resources/cloud-computing-dictionary/what-is-cloud-computing/), [Fybe](https://fybe.com/en/object-storage?gclid=Cj0KCQjw4bipBhCyARIsAFsieCynp-Mcn2A1tH6CLWWYTIlvNRcwAxiDaifoQQM7wXDnTJ1V9-MyLxIaAj_PEALw_wcB), [Amazon](https://aws.amazon.com/products/storage/).*
 4. *Device Tree.*
 5. *Common Device Tree(If have).*
 6. *Vendor Tree.*
@@ -32,6 +32,7 @@ cd lineageos
 
 In this case I use the local manifest to make it faster to prepare the device tree, vendor tree and also kernel tree. Actually, you can use git clone one by one, but to make it easy and fast we will use a local manifest. Here I already have a manifest for the Xiaomi Redmi Note 9 device. For other devices, you can search for it on GitHub.
 
+Example:
 ``` bash
 https://github.com/Shakib-BD/local_manifest.git
 ```
@@ -56,6 +57,7 @@ Make sure you change the local manifest on line 2 according to your device, the 
 
 This step is only optional and can be skipped if your device tree is compatible with LineageOS. However, if not, you have to edit it, for example for the Redmi Note 9 it is in the directory *device/xiaomi/merlinx*. So, I can't explain the editing process in this article because it would be quite long. So I assume your device tree is appropriate. You have to make a repository for Bringup rom branch for your device. Here I already have lineage-20 branch and already bringup for Xiaomi Redmi Note 9 device. For other devices, you can search for it on GitHub. [Bringup].
 
+Example:
 ``` bash
 https://github.com/Shakib-BD/dt_merlinx/tree/lineage-20
 ```
@@ -76,7 +78,7 @@ When finished, green writing will appear and also the location where the custom 
 
 ⚪ **Rom Upload** :
 
-You can upload your rom to [📎 temp.sh](https://temp.sh) / [transfer.sh](https://transfer.sh) to read their uploading guide.
+You can upload your rom to 📎 [temp.sh](https://temp.sh) / [transfer.sh](https://transfer.sh) to read their uploading guide.
 
 So that's more or less how to build your own Custom ROM, even though in the end it looks difficult, that's how it is because when you read this article I'm sure you'll want to learn. And yes, maybe this article is still incomplete and I am aware of that, but it would be too long to explain everything in one post. And the last do with your own risk.
 
