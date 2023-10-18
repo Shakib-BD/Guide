@@ -25,22 +25,18 @@ Next, you will need to choose if you want to merge the commits or cherry-pick. H
 
 ### Cherry-picking
 
-Pros:
 * Easier to resolve conflicts as you know exactly what conflict is causing an issue.
 * Easier to rebase as each commit is on its own.
 * Easier to bisect if running into issues
 
-Cons:
 * It takes longer as each commit has to be individually picked.
 * Little more difficult to tell if commit is from upstream on first glance
 
 ### Merge
 
-Pros:
 * It's faster as you do not have to wait for all of the clean patches to merge.
 * It's easier to see when a commit is from upstream as you will not be the committer, the upstream maintainer will be.
 
-Cons:
 * Resolving conflicts can be a bit more difficult as you will need to look up which commit is causing the conflict using `git log`/`git blame`, it will not directly tell you.
 * Rebasing is difficult as you cannot rebase a merge, it will offer to cherry-pick all of the commit individually. However, you should not be rebasing often, instead using `git revert` and `git merge` where possible.
 
