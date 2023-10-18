@@ -1,80 +1,83 @@
-# How to merge linux-stable into an Android kernel
+#**How to build AOSP Custom ROM?**
 
-## 1. Figure out what version you are on
+Hello friends, this time I want to discuss how to build AOSP. For you HP repairers, are you sometimes curious about how to build your own Custom ROM? So, on this occasion I want to give you the easiest tutorial on how to build your own Custom ROM.
 
-As trivial as this seems, it is necessary to know where you need to begin. Run the following command in your kernel tree:
-```bash
-make kernelversion
+Before continuing, make sure you have a basic understanding of the Linux CLI and also GIT version control, besides that, make sure you also have a computer/server with the specifications I recommend, namely 8 CPU cores and 32 GB RAM for a smooth build process, and don't forget to prepare 3000 storage. GB, because the Android 13 Source is quite large. Actually, for the specs of 4 CPU cores and 16 GB RAM, it is still possible, but you have to activate SWAP memory and so on, which I cannot possibly explain in this article. Don't forget to use Ubuntu 18 OS and above, in this case I use Ubuntu 22.04 with 32 CPU core specs and 64 GB RAM as the build server. OK, well, up to this step, I assume you have met these requirements. Next, let's prepare the build environment.
+
+⚪ **Requirements** :
+
+1. *Brain.*
+2. *Internet.*
+3. *Server: Like Google Cloud, Azure, Amazon.*
+4. *Device Tree.*
+5. *Common Device Tree(If have).*
+6. *Vendor Tree.*
+7. *Kernel Tree / Prebuilt kernel.*
+
+⚪ **Setting up the build environment** :
+
+You must install the required packages/dependencies.
+
+``` bash
+sudo apt-get install git-core gnupg flex bison build-essential zip curl zlib1g-dev libc6-dev-i386 libncurses5 x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip fontconfig python3 python- is-python3.
 ```
 
-It will spit back some version. The first two number will be used to figure out the branch you need (e.g. linux-4.4.y for any 4.4 kernel) and the last number will be used to determine what version you need to start with merging (e.g. if you are on 4.4.21, you'll merge 4.4.22 next).
-
-## 2. Fetch the latest kernel source from kernel.org
-
-[kernel.org](https://www.kernel.org/) houses the latest kernel source in [the linux-stable repository](https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git/). At the bottom of that page, there will be three fetch links. In my experience, Google's mirror tends to be the fastest but your results may vary. Run the following commands:
-```bash
-git remote add linux-stable https://kernel.googlesource.com/pub/scm/linux/kernel/git/stable/linux-stable.git
-git fetch linux-stable
+⚪ **Setting up the launcher repo** :
+``` bash
+mkdir lineageos
+cd lineageos
 ```
 
-## 3. Decide if you want to merge or cherry-pick the commits in
+⚪ **Prepare local manifest** :
 
-Next, you will need to choose if you want to merge the commits or cherry-pick. Here's the pros and cons of each and when you may want to do them.
+In this case I use the local manifest to make it faster to prepare the device tree, vendor tree and also kernel tree. Actually, you can use git clone one by one, but to make it easy and fast we will use a local manifest. Here I already have a manifest for the Xiaomi Redmi Note 9 device. For other devices, you can search for it on GitHub.
 
-**NOTE:** If your kernel source is in the form of a tarball, you will most likely need to cherry-pick, otherwise you will get thousands of file conflicts because git is populating the history based purely on upstream, not what the OEM or CAF has changed. Just skip to step 4.
-
-### Cherry-picking
-
-Pros:
-* Easier to resolve conflicts as you know exactly what conflict is causing an issue.
-* Easier to rebase as each commit is on its own.
-* Easier to bisect if running into issues
-
-Cons:
-* It takes longer as each commit has to be individually picked.
-* Little more difficult to tell if commit is from upstream on first glance
-
-### Merge
-
-Pros:
-* It's faster as you do not have to wait for all of the clean patches to merge.
-* It's easier to see when a commit is from upstream as you will not be the committer, the upstream maintainer will be.
-
-Cons:
-* Resolving conflicts can be a bit more difficult as you will need to look up which commit is causing the conflict using `git log`/`git blame`, it will not directly tell you.
-* Rebasing is difficult as you cannot rebase a merge, it will offer to cherry-pick all of the commit individually. However, you should not be rebasing often, instead using `git revert` and `git merge` where possible.
-
-I would recommend doing a cherry-pick to figure out any problem conflicts initially, doing a merge, then revert the problem commits afterwards so updating is easier (as merging is quicker after being up to date).
-
-
-## 4. Add the commits into your source, one version at a time
-
-The most important part of this process is the one version at a time part. There MAY be a problem patch in your upstream series, which could cause a problem with booting or break something like sound or charging (explained in the tips and tricks section). Doing incremental version changes is important for this reason, it's easier to find an issue in 50 commits than upwards of 2000 commits for some versions. I would only recommend doing a full merge once you know all of the problem commits and conflict resolutions.
-
-### Cherry-picking
-
-Format:
-```bash
-git cherry-pick <previous_tag>..<next_tag>
+``` bash
+https://github.com/Shakib-BD/local_manifest.git
 ```
 
-Example:
-```bash
-git cherry-pick v4.14.326..v4.14.327
+⚪ **Sync ROM source and local manifest** :
+
+For this tutorial I will use LineageOS 20 Android 13 because in my opinion most of the devi ce tree is definitely ready to be used for that Rom.
+
+``` bash
+repo init --depth=1 --no-repo-verify -u https://github.com/LineageOS/android.git -b lineage-20.0 --git-lfs -g default,-mips,-darwin,- notdefault 
+git clone https://github.com/Shakib-BD/local_manifest.git --depth 1 -b lineage-20.0 .repo/local_manifests 
+repo sync -c --no-clone-bundle --no-tags --optimized-fetch --prune --force-sync -j8
 ```
 
-### Merge
+After that, you wait a while, because this process usually takes quite a while depending on the internet speed you have.
 
-Format:
-```bash
-git merge <next_tag>
+⚪ **NOTES** :
+
+Make sure you change the local manifest on line 2 according to your device, the code above has been optimized so that when syncing it is not too big.
+
+⚪ **Customizing the Device Tree (Optional)** :
+
+This step is only optional and can be skipped if your device tree is compatible with LineageOS. However, if not, you have to edit it, for example for the Redmi Note 9 it is in the directory *device/xiaomi/merlinx*. So, I can't explain the editing process in this article because it would be quite long. So I assume your device tree is appropriate. You have to make a repository for Bringup rom branch for your device. Here I already have lineage-20 branch and already bringup for Xiaomi Redmi Note 9 device. For other devices, you can search for it on GitHub. [Bringup].
+
+``` bash
+https://github.com/Shakib-BD/dt_merlinx/tree/lineage-20
 ```
 
-Example:
-```bash
-git merge v4.14.327
+⚪ **Build a Custom ROM** :
+
+After the steps above have been carried out correctly, the next step is the building process which usually takes quite a lot of time depending on the specifications of the computer you have. Next, all you have to do is copy and change it merlinxaccording to your cellphone codename, for example cactus.
+
+``` bash
+. build/envsetup.sh 
+lunch lineage_merlinx-user 
+make bacon
 ```
 
-I recommend keeping track of the conflicts in merge commits by removing the `#` markers.
+⚪ **NOTE** :
+Make sure you wait patiently at this step.
+When finished, green writing will appear and also the location where the custom ROM Zip file is located.
 
-© Credit : [Android-Linux-Stable](https://github.com/android-linux-stable) & [Shakib | شَکِیْب](https://t.me/Info_Shakib)
+⚪ **Rom Upload** :
+
+You can upload your rom to [📎 temp.sh](https://temp.sh) / [transfer.sh](https://transfer.sh) to read their uploading guide.
+
+So that's more or less how to build your own Custom ROM, even though in the end it looks difficult, that's how it is because when you read this article I'm sure you'll want to learn. And yes, maybe this article is still incomplete and I am aware of that, but it would be too long to explain everything in one post. And the last do with your own risk.
+
+© Credit : [Ozi Saputra](https://github.com/mitsu00) & [Shakib](https://t.me/Info_Shakib)
